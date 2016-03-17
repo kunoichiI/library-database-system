@@ -53,7 +53,7 @@ router.post('/checkout', function(req, res){
     card_no : req.body.card_no
   };
   // Check if a BORROWER already has 3 BOOK_LOANS.
-  var query = client.query("SELECT l.loan_id FROM borrower AS b, book_loans AS l WHERE b.card_no = l.card_no AND l.card_no = ($1) AND l.date_in IS NULL", [card.card_no]);
+  var query = client.query("SELECT l.loan_id FROM borrower AS b, book_loans AS l WHERE b.card_no = l.card_no AND l.card_no = ($1) AND l.date_in IS NULL GROUP BY l.loan_id", [card.card_no]);
   query.on("row", function(row){
     console.log(row);
     result.push(row);
@@ -66,7 +66,8 @@ router.post('/checkout', function(req, res){
       //
     }else if (result.length < 3) { // Borrower hasn't borrowed more than 3 books
       // check the number of BOOK_LOANS for a given book at a branch
-      var query1 = client.query("SELECT l.loan_id FROM book_copies AS c, book_loans AS l WHERE c.branch_id = l.branch_id AND c.branch_id = ($1) AND c.book_id = l.isbn AND c.book_id = ($2) AND l.date_in IS NULL", [card.branch_id, card.isbn]);
+      // select the checkouted book and late book
+      var query1 = client.query("SELECT l.loan_id FROM book_copies AS c, book_loans AS l WHERE (c.branch_id = l.branch_id AND c.branch_id = ($1) AND c.book_id = l.isbn AND c.book_id = ($2) AND l.date_in IS NULL) OR (c.branch_id = l.branch_id AND c.branch_id = ($1) AND c.book_id = l.isbn AND c.book_id = ($2) AND l.date_in > CURRENT_DATE)", [card.branch_id, card.isbn]);
       query1.on('row',function(row){
         result1.push(row);
       })
@@ -81,9 +82,9 @@ router.post('/checkout', function(req, res){
         query2.on('end',function(){
           console.log(result2);
           if (result1.length == 0 && result2[0].no_of_copies > 0) { // the book hasn't been borrowed yet in this library branch, and has copies now.
-            var query2 = client.query("INSERT INTO book_loans(isbn, branch_id, card_no, date_out, due_date) VALUES($1, $2, $3, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP + interval '14 days')",[card.isbn, card.branch_id, card.card_no]);
+            var query2 = client.query("INSERT INTO book_loans(isbn, branch_id, card_no, date_out, due_date) VALUES($1, $2, $3, CURRENT_DATE, CURRENT_DATE + interval '14 days')",[card.isbn, card.branch_id, card.card_no]);
           } else if (result1.length > 0 && result1.length < result2[0].no_of_copies) { // book is still avaiable
-            var query3 = client.query("INSERT INTO book_loans(isbn, branch_id, card_no, date_out, due_date) VALUES($1, $2, $3, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP + interval '14 days')",[card.isbn, card.branch_id, card.card_no]);
+            var query3 = client.query("INSERT INTO book_loans(isbn, branch_id, card_no, date_out, due_date) VALUES($1, $2, $3, CURRENT_DATE, CURRENT_DATE + interval '14 days')",[card.isbn, card.branch_id, card.card_no]);
           } else if (result1.length == result2[0].no_of_copies) {  // book not available
             console.log("No available book in this library!");
           }
@@ -104,8 +105,8 @@ router.post('/checkin', function(req, res){
      fname : req.body.fname,
      lname : req.body.lname // get borrower's name or part of her name
    }
- console.log("anything?")
- var query = client.query("SELECT l.loan_id, l.isbn, l.card_no, l.date_out, l.due_date FROM book_loans AS l, borrower AS b WHERE (b.card_no = ($1) AND b.card_no = l.card_no) OR (l.isbn = ($2) AND l.card_no = b.card_no) OR (b.fname = ($3) AND b.lname = ($4) AND b.card_no = l.card_no)", [check.card_no, check.book_id, check.fname, check.lname]);
+ // Only book_loans that have null date_in will be selected(means they're not returned)
+ var query = client.query("SELECT l.loan_id, l.isbn, l.card_no, l.date_out, l.due_date FROM book_loans AS l, borrower AS b WHERE (b.card_no = ($1) AND b.card_no = l.card_no AND l.date_in IS NULL) OR (l.isbn = ($2) AND l.card_no = b.card_no AND l.date_in IS NULL) OR (b.fname = ($3) AND b.lname = ($4) AND b.card_no = l.card_no AND l.date_in IS NULL)", [check.card_no, check.book_id, check.fname, check.lname]);
  // query database by providing any of book_id, card_no, and/or borrower's name. Get book_loan tuples
  query.on('row', function(row){
    console.log(row);
@@ -119,7 +120,8 @@ router.post('/checkin', function(req, res){
 // Step 2: Insert check-in date for a specific book_loan
 router.post('/checkin/:loan_id', function(req, res){
   var id = req.params.loan_id;
-  var query = client.query("UPDATE book_loans SET date_in = CURRENT_TIMESTAMP WHERE loan_id = ($1)", [id]);
+  var date = req.body.date;
+  var query = client.query("UPDATE book_loans SET date_in = ($1) WHERE loan_id = ($2)", [date, id]); // Input a check-in date for a book_loan
   query.on('end',function(){
     res.json({message: "Check-in Successfully!"})
   })
@@ -153,6 +155,20 @@ router.post('/newreader', function(req, res){
     }
   })
 })
+
+// Fines management, first find out which book's late, step 1: insert this book_loan into fines table
+// Two scenarios for late books: 1. late books that have been returned - the fine will be [(the difference in days between the due_date and date_in) * $0.25].
+// 2. late books that are still out - the estimated fine will be [(the difference between the due_date and TODAY) * $0.25].
+router.get('/late', function(req, res){
+ var result = [];  // array to store all late book_loans
+ var query = client.query("INSERT INTO fines(loan_id, fine_amt, paid) (SELECT l.loan_id, (l.date_in - l.due_date) * 0.25, FALSE FROM book_loans AS l WHERE NOT EXISTS (SELECT loan_id FROM fines) AND (l.date_in > l.due_date)) UNION (SELECT l.loan_id, (CURRENT_DATE - l.due_date)*0.25, FALSE FROM book_loans AS l WHERE NOT EXISTS (SELECT loan_id FROM fines) AND (l.date_in IS NULL) AND (l.due_date < CURRENT_DATE))");
+ query.on('end',function(){
+   res.json({message:'Successfully update fines for all late loans!'})
+   })
+ })
+
+
+
 
 
 app.use('/api', router);
