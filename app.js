@@ -182,7 +182,7 @@ router.get('/payment/:loan_id', function(req, res) {
 router.get('/payments/:card_no', function(req, res){
     var card_no = req.params.card_no;
     var results = [];
-    var query = client.query("SELECT l.card_no, SUM(fines.fine_amt) FROM book_loans AS l, fines WHERE l.card_no = ($1) AND  l.loan_id = fines.loan_id AND paid = FALSE GROUP BY l.card_no", [card_no]);
+    var query = client.query("SELECT l.card_no, COUNT(*), SUM(fines.fine_amt) FROM book_loans AS l, fines WHERE l.card_no = ($1) AND  l.loan_id = fines.loan_id AND paid = FALSE GROUP BY l.card_no", [card_no]);
     query.on('row', function(row){
       results.push(row);
     })
