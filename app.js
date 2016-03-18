@@ -160,13 +160,42 @@ router.post('/newreader', function(req, res){
 // Two scenarios for late books: 1. late books that have been returned - the fine will be [(the difference in days between the due_date and date_in) * $0.25].
 // 2. late books that are still out - the estimated fine will be [(the difference between the due_date and TODAY) * $0.25].
 router.get('/late', function(req, res){
- var result = [];  // array to store all late book_loans
  var query = client.query("INSERT INTO fines(loan_id, fine_amt, paid) (SELECT l.loan_id, (l.date_in - l.due_date) * 0.25, FALSE FROM book_loans AS l WHERE NOT EXISTS (SELECT loan_id FROM fines) AND (l.date_in > l.due_date)) UNION (SELECT l.loan_id, (CURRENT_DATE - l.due_date)*0.25, FALSE FROM book_loans AS l WHERE NOT EXISTS (SELECT loan_id FROM fines) AND (l.date_in IS NULL) AND (l.due_date < CURRENT_DATE))");
  query.on('end',function(){
-   res.json({message:'Successfully update fines for all late loans!'})
+   var query1 = client.query("UPDATE fines SET fine_amt = (CURRENT_DATE - l.due_date)*0.25 FROM book_loans AS l WHERE fines.loan_id = l.loan_id AND l.date_in IS NULL AND paid = FALSE");
+   query1.on('end', function(){
+     res.json({message: 'Sucessfully update fines table!'});
+   })
    })
  })
 
+// Management entry for payment(enter payment of fines)
+router.get('/payment/:loan_id', function(req, res) {
+  var loan_id = req.params.loan_id;
+  var query = client.query("UPDATE fines SET paid = TRUE FROM book_loans AS l WHERE l.date_in <= CURRENT_DATE AND l.date_in > l.due_date AND fines.loan_id = l.loan_id AND fines.loan_id = ($1)", [loan_id]);
+  query.on('end', function(){
+    res.json({message: 'Sucessfully enter payment!'})
+  })
+})
+
+// Group unpaid payment by the card user(filter out previously paid fines)
+router.get('/payments/:card_no', function(req, res){
+    var card_no = req.params.card_no;
+    var results = [];
+    var query = client.query("SELECT l.card_no, SUM(fines.fine_amt) FROM book_loans AS l, fines WHERE l.card_no = ($1) AND  l.loan_id = fines.loan_id AND paid = FALSE GROUP BY l.card_no", [card_no]);
+    query.on('row', function(row){
+      results.push(row);
+    })
+    query.on('end', function(){
+      console.log(results);
+      if (results.length == 0){
+        res.json({message:"The borrower has nothing to pay right now!"})
+      }else{
+        res.json(results);
+      }
+
+    })
+})
 
 
 
