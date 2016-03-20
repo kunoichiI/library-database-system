@@ -197,9 +197,6 @@ router.get('/payments/:card_no', function(req, res){
     })
 })
 
-
-
-
 app.use('/api', router);
 
 app.listen(port);
