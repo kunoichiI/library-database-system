@@ -8,9 +8,11 @@ var express = require('express'),
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-app.set('views', path.join(__dirname, 'views'));
+app.use('/static', express.static(__dirname + '/public'));
+app.set('views', __dirname + '/views');
 app.engine('html', require('ejs').renderFile);
 app.set('view engine', 'html');
+
 
 var port = process.env.PORT || 8080;
 
@@ -28,6 +30,12 @@ router.get('/', function(req, res, next){
   res.render('index.html');
 })
 
+router.get('/searchbook', function(req, res){
+  res.render('search.ejs');
+})
+router.get('/search', function(req, res){
+  res.render('searchResults.ejs');
+})
 // Search for a book by given name, isbn and/or author combination
 router.post('/search', function(req, res){
   //var results = [];
@@ -35,10 +43,13 @@ router.post('/search', function(req, res){
     book_id : req.body.book_id,
     title : '%' + req.body.title + '%',
     author : '%' + req.body.author + '%' // author may be NULL
-  };
-  var query = client.query("SELECT DISTINCT b.isbn10, b.title, b.author, c.branch_id, c.no_of_copies, l.branch_name FROM book AS b, library_branch AS l, book_copies AS c WHERE (b.isbn10 = ($1) AND b.title LIKE ($2) AND c.branch_id = l.branch_id AND c.book_id = b.isbn10) OR (b.isbn10 = ($1) AND b.title LIKE ($2) AND b.author LIKE ($3) AND c.branch_id = l.branch_id AND c.book_id = b.isbn10) OR (b.title LIKE ($2) AND b.author LIKE ($3) AND c.branch_id = l.branch_id AND c.book_id = b.isbn10) OR (b.isbn10 = ($1) AND b.author LIKE ($3) AND c.branch_id = l.branch_id AND c.book_id = b.isbn10)",[book.book_id, book.title, book.author], function(err, results){
+  }
+  // given any combination of ISBN, title, and/ or Author(s)
+  var query = client.query("SELECT DISTINCT b.isbn10, b.title, b.author, c.branch_id, c.no_of_copies, l.branch_name FROM book AS b, library_branch AS l, book_copies AS c WHERE (b.isbn10 = ($1) AND c.branch_id = l.branch_id AND c.book_id = b.isbn10) OR (b.isbn10 = ($1) AND b.title LIKE ($2) AND c.branch_id = l.branch_id AND c.book_id = b.isbn10 ) OR (b.isbn10 = ($1) AND b.title LIKE ($2) AND b.author LIKE ($3) AND c.branch_id = l.branch_id AND c.book_id = b.isbn10) OR (b.isbn10 = ($1) AND b.title LIKE ($2) AND b.author LIKE ($3) AND c.branch_id = l.branch_id AND c.book_id = b.isbn10) OR (b.isbn10 = ($1) AND b.author LIKE ($3) AND c.branch_id = l.branch_id AND c.book_id = b.isbn10) ORDER BY c.branch_id ",[book.book_id, book.title, book.author], function(err, results){
     if (err) throw err;
-    res.json(results.rows);
+    //res.json(results.rows);
+    console.log(results.rows);
+    res.render('searchResults.ejs', {results: results.rows})
   })
 })
 
@@ -83,10 +94,17 @@ router.post('/checkout', function(req, res){
           console.log(result2);
           if (result1.length == 0 && result2[0].no_of_copies > 0) { // the book hasn't been borrowed yet in this library branch, and has copies now.
             var query2 = client.query("INSERT INTO book_loans(isbn, branch_id, card_no, date_out, due_date) VALUES($1, $2, $3, CURRENT_DATE, CURRENT_DATE + interval '14 days')",[card.isbn, card.branch_id, card.card_no]);
+            query2.on('end', function(){
+              res.json({message:'Successfully insert book loan!'})
+            })
           } else if (result1.length > 0 && result1.length < result2[0].no_of_copies) { // book is still avaiable
             var query3 = client.query("INSERT INTO book_loans(isbn, branch_id, card_no, date_out, due_date) VALUES($1, $2, $3, CURRENT_DATE, CURRENT_DATE + interval '14 days')",[card.isbn, card.branch_id, card.card_no]);
+            query3.on('end', function(){
+              res.json({message:'Successfully insert book loan!'})
+            })
           } else if (result1.length == result2[0].no_of_copies) {  // book not available
             console.log("No available book in this library!");
+            res.json({message:'No available book in this library!'})
           }
         })
 
