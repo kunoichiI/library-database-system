@@ -50,6 +50,9 @@ router.get('/', function(req, res, next){
       .get('/newreader', function(req, res){
         res.render('createBorrower.ejs');
       })
+      .get('/late', function(req, res){
+        res.render('requestLate.ejs');
+      })
 
 // Search for a book by given name, isbn and/or author combination
 router.post('/search', function(req, res){
@@ -217,12 +220,20 @@ router.post('/newreader', function(req, res){
 // Fines management, first find out which book's late, step 1: insert this book_loan into fines table
 // Two scenarios for late books: 1. late books that have been returned - the fine will be [(the difference in days between the due_date and date_in) * $0.25].
 // 2. late books that are still out - the estimated fine will be [(the difference between the due_date and TODAY) * $0.25].
-router.get('/late', function(req, res){
+router.post('/late', function(req, res){
+ var late_loans = [];
  var query = client.query("INSERT INTO fines(loan_id, fine_amt, paid) (SELECT l.loan_id, (l.date_in - l.due_date) * 0.25, FALSE FROM book_loans AS l WHERE NOT EXISTS (SELECT loan_id FROM fines) AND (l.date_in > l.due_date)) UNION (SELECT l.loan_id, (CURRENT_DATE - l.due_date)*0.25, FALSE FROM book_loans AS l WHERE NOT EXISTS (SELECT loan_id FROM fines) AND (l.date_in IS NULL) AND (l.due_date < CURRENT_DATE))");
  query.on('end',function(){
    var query1 = client.query("UPDATE fines SET fine_amt = (CURRENT_DATE - l.due_date)*0.25 FROM book_loans AS l WHERE fines.loan_id = l.loan_id AND l.date_in IS NULL AND paid = FALSE");
    query1.on('end', function(){
-     res.json({message: 'Sucessfully update fines table!'});
+     //res.json({message: 'Sucessfully update fines table!'});
+     var query2 = client.query("SELECT SUM(f.fine_amt),l.loan_id, l.card_no, l.isbn,l.date_out, l.due_date, l.date_in FROM fines AS f, book_loans AS l WHERE f.paid = FALSE AND f.loan_id = l.loan_id GROUP BY l.card_no,l.loan_id, l.card_no, l.isbn, l.date_out, l.due_date, l.date_in");
+     query2.on('row', function(row){
+       late_loans.push(row);
+     })
+     query2.on('end', function(){
+       res.render('lateLoans.ejs',{results:late_loans});
+     })
    })
    })
  })
@@ -230,9 +241,21 @@ router.get('/late', function(req, res){
 // Management entry for payment(enter payment of fines)
 router.get('/payment/:loan_id', function(req, res) {
   var loan_id = req.params.loan_id;
-  var query = client.query("UPDATE fines SET paid = TRUE FROM book_loans AS l WHERE l.date_in <= CURRENT_DATE AND l.date_in > l.due_date AND fines.loan_id = l.loan_id AND fines.loan_id = ($1)", [loan_id]);
-  query.on('end', function(){
-    res.json({message: 'Sucessfully enter payment!'})
+  var result = [];
+  var today = new Date();
+  var query1 = client.query("SELECT l.date_in FROM book_loans AS l, fines WHERE l.date_in > l.due_date AND fines.loan_id = l.loan_id AND fines.loan_id = ($1)", [loan_id]);
+  query1.on('row', function(row){
+    result.push(row);
+  })
+  query1.on('end', function(){
+    if(result[0].date_in > today){
+      res.render('payFail.ejs', {message:'You cannot pay for a book that has not been returned yet!'});
+    }else {
+      var query = client.query("UPDATE fines SET paid = TRUE FROM book_loans AS l WHERE l.date_in <= CURRENT_DATE AND l.date_in > l.due_date AND fines.loan_id = l.loan_id AND fines.loan_id = ($1)", [loan_id]);
+      query.on('end', function(){
+        res.render('paySuccess.ejs', {message: 'Sucessfully enter payment!'})
+      })
+    }
   })
 })
 
