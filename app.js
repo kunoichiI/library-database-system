@@ -29,13 +29,25 @@ var router = express.Router();
 router.get('/', function(req, res, next){
   res.render('index.html');
 })
-
 router.get('/searchbook', function(req, res){
   res.render('search.ejs');
 })
 router.get('/search', function(req, res){
   res.render('searchResults.ejs');
 })
+router.get('/checkout', function(req, res){
+  res.render('checkout.ejs');
+})
+router.get('/success', function(req, res){
+  res.render('checkoutSucess.ejs');
+})
+router.get('/checkin', function(req, res){
+  res.render('checkinRegister.ejs');
+})
+router.get('/checkin/:loan_id', function(req, res){
+  res.render('checkinForm.ejs');
+})
+
 // Search for a book by given name, isbn and/or author combination
 router.post('/search', function(req, res){
   //var results = [];
@@ -74,6 +86,9 @@ router.post('/checkout', function(req, res){
   var result = [];
   var result1 = [];
   var result2 = [];
+  var message_1 = "A borrower can borrow at most 3 books at one time!";
+  var message_2 = 'Successfully insert book loan!';
+  var message_3 = 'No available book in this library!';
   var card = {
     branch_id :req.body.branch_id,
     isbn : req.body.isbn,
@@ -89,7 +104,7 @@ router.post('/checkout', function(req, res){
     console.log(result);
     console.log("i cant believe you")
     if (result.length >= 3) {
-      console.log("A borrower can borrow at most 3 books at one time!");
+      res.render('checkoutMoreThanThree.ejs', {message:message_1});
       //
     }else if (result.length < 3) { // Borrower hasn't borrowed more than 3 books
       // check the number of BOOK_LOANS for a given book at a branch
@@ -111,16 +126,18 @@ router.post('/checkout', function(req, res){
           if (result1.length == 0 && result2[0].no_of_copies > 0) { // the book hasn't been borrowed yet in this library branch, and has copies now.
             var query2 = client.query("INSERT INTO book_loans(isbn, branch_id, card_no, date_out, due_date) VALUES($1, $2, $3, CURRENT_DATE, CURRENT_DATE + interval '14 days')",[card.isbn, card.branch_id, card.card_no]);
             query2.on('end', function(){
-              res.json({message:'Successfully insert book loan!'})
+              console.log("Success!");
+              res.render('checkoutSucess.ejs', {message:message_2});
             })
           } else if (result1.length > 0 && result1.length < result2[0].no_of_copies) { // book is still avaiable
             var query3 = client.query("INSERT INTO book_loans(isbn, branch_id, card_no, date_out, due_date) VALUES($1, $2, $3, CURRENT_DATE, CURRENT_DATE + interval '14 days')",[card.isbn, card.branch_id, card.card_no]);
             query3.on('end', function(){
-              res.json({message:'Successfully insert book loan!'})
+              console.log("Success!");
+              res.render('checkoutSucess.ejs', {message:message_2});
             })
           } else if (result1.length == result2[0].no_of_copies) {  // book not available
             console.log("No available book in this library!");
-            res.json({message:'No available book in this library!'})
+            res.render('checkoutNotAvailable.ejs', {message:message_3});
           }
         })
 
@@ -140,14 +157,15 @@ router.post('/checkin', function(req, res){
      lname : req.body.lname // get borrower's name or part of her name
    }
  // Only book_loans that have null date_in will be selected(means they're not returned)
- var query = client.query("SELECT l.loan_id, l.isbn, l.card_no, l.date_out, l.due_date FROM book_loans AS l, borrower AS b WHERE (b.card_no = ($1) AND b.card_no = l.card_no AND l.date_in IS NULL) OR (l.isbn = ($2) AND l.card_no = b.card_no AND l.date_in IS NULL) OR (b.fname = ($3) AND b.lname = ($4) AND b.card_no = l.card_no AND l.date_in IS NULL)", [check.card_no, check.book_id, check.fname, check.lname]);
+ var query = client.query("SELECT DISTINCT b.fname, b.lname, l.loan_id, l.isbn, l.card_no, l.date_out, l.due_date FROM book_loans AS l, borrower AS b, book AS k WHERE (b.card_no = ($1) AND b.card_no = l.card_no AND l.date_in IS NULL) OR (l.isbn = ($2) AND l.card_no = b.card_no AND l.date_in IS NULL) OR (b.fname = ($3) AND b.lname = ($4) AND b.card_no = l.card_no AND l.date_in IS NULL)", [check.card_no, check.book_id, check.fname, check.lname]);
  // query database by providing any of book_id, card_no, and/or borrower's name. Get book_loan tuples
  query.on('row', function(row){
    console.log(row);
    result.push(row);
  })
  query.on('end', function(){
-   res.json(result);
+   console.log(result);
+   res.render('checkin.ejs', {result:result})
  })
 })
 
@@ -157,7 +175,7 @@ router.post('/checkin/:loan_id', function(req, res){
   var date = req.body.date;
   var query = client.query("UPDATE book_loans SET date_in = ($1) WHERE loan_id = ($2)", [date, id]); // Input a check-in date for a book_loan
   query.on('end',function(){
-    res.json({message: "Check-in Successfully!"})
+    res.render('checkinSuccess.ejs', {message: "Check-in Successfully!"})
   })
 })
 
