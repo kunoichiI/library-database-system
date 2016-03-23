@@ -45,12 +45,26 @@ router.post('/search', function(req, res){
     author : '%' + req.body.author + '%' // author may be NULL
   }
   // given any combination of ISBN, title, and/ or Author(s)
-  var query = client.query("SELECT DISTINCT b.isbn10, b.title, b.author, c.branch_id, c.no_of_copies, l.branch_name FROM book AS b, library_branch AS l, book_copies AS c WHERE (b.isbn10 = ($1) AND c.branch_id = l.branch_id AND c.book_id = b.isbn10) OR (b.isbn10 = ($1) AND b.title LIKE ($2) AND c.branch_id = l.branch_id AND c.book_id = b.isbn10 ) OR (b.isbn10 = ($1) AND b.title LIKE ($2) AND b.author LIKE ($3) AND c.branch_id = l.branch_id AND c.book_id = b.isbn10) OR (b.isbn10 = ($1) AND b.title LIKE ($2) AND b.author LIKE ($3) AND c.branch_id = l.branch_id AND c.book_id = b.isbn10) OR (b.isbn10 = ($1) AND b.author LIKE ($3) AND c.branch_id = l.branch_id AND c.book_id = b.isbn10) ORDER BY c.branch_id ",[book.book_id, book.title, book.author], function(err, results){
-    if (err) throw err;
-    //res.json(results.rows);
-    console.log(results.rows);
-    res.render('searchResults.ejs', {results: results.rows})
-  })
+  if (book.book_id != null && book.title == null && book.author == null) {
+    var query = client.query("SELECT DISTINCT b.isbn10, b.title, b.author, c.branch_id, c.no_of_copies, l.branch_name  FROM book AS b, library_branch AS l, book_copies AS c WHERE b.isbn10 = ($1) AND c.branch_id = l.branch_id AND c.book_id = b.isbn10 ORDER BY c.branch_id",[book.book_id], function(err, results){
+      res.render('searchResults.ejs', {results:results.rows});
+    })
+  }else if(book.book_id == null && book.title != null && book.author == null) {
+    var query = client.query("SELECT DISTINCT b.isbn10, b.title, b.author, c.branch_id, c.no_of_copies, l.branch_name  FROM book AS b, library_branch AS l, book_copies AS c WHERE b.title LIKE ($1) AND c.branch_id = l.branch_id AND c.book_id = b.isbn10 ORDER BY c.branch_id", [book.title], function(err, results){
+      res.render('searchResults.ejs', {results:results.rows});
+    })
+  }else if(book.book_id != null && book.title != null && book.author == null) {
+    var query = client.query("SELECT DISTINCT b.isbn10, b.title, b.author, c.branch_id, c.no_of_copies, l.branch_name  FROM book AS b, library_branch AS l, book_copies AS c WHERE b.isbn10 = ($1) AND b.title LIKE ($2) AND c.branch_id = l.branch_id AND c.book_id = b.isbn10 ORDER BY c.branch_id",[book.book_id, book.title], function(err, results){
+      res.render('searchResults.ejs', {results:results.rows});
+    })
+  }else if(book.book_id != null && book.title != null && book.author != null){
+    var query = client.query("SELECT DISTINCT b.isbn10, b.title, b.author, c.branch_id, c.no_of_copies, l.branch_name  FROM book AS b, library_branch AS l, book_copies AS c WHERE b.isbn10 = ($1) AND b.title LIKE ($2) AND b.author LIKE ($3) AND c.branch_id = l.branch_id AND c.book_id = b.isbn10 ORDER BY c.branch_id",[book.book_id , book.title , book.author], function(err, results){
+      if (err) throw err;
+      //res.json(results.rows);
+      console.log(results.rows);
+      res.render('searchResults.ejs', {results: results.rows})
+    })
+  }
 })
 
 // Check out a book in a specific library branch
