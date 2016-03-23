@@ -11,14 +11,6 @@
     <!-- Mobile Specific Metas
     ================================================== -->
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <style>
-    ul#menu li {
-    display:inline;
-    padding: 10px 100px;
-    text-align:center;
-    }
-    </style>
     <!-- CSS
     ================================================== -->
     <!-- Bootstrap css file-->
@@ -116,35 +108,33 @@
              <% if (results.length == 0) { %>
                <h2>No results to show..</h2>
              <% } else { %>
-               <label for="id1">Book Name:</label>
-               <p id="id1"><%=results[0].title %></p>
-               <label for="id2">Author(s):</label>
-               <p id='id2'><%=results[0].author %></p>
-               <b>List book detail in each library branch:</b>
                <br>
-                 <table class="table">
-                   <thead>
-                     <tr>
-                       <th>Branch ID</th>
-                       <th>Branch Name</th>
-                       <th>No. of Copies</th>
-                     </tr>
-                   </thead>
-                   <tbody>
-                   </tbody>
-                 </table>
-              <% for (var i = 0; i < results.length; i++) { %>
-               <ul id = 'menu'>
-                   <li><%=results[i].branch_id %></li>
-                   <li><span></span><span></span><span></span></li>
-                   <li><%=results[i].branch_name %></li>
-                   <li><span></span><span></span><span></span></li>
-                   <li><%=results[i].no_of_copies %></li>
-               </ul>
-               <% } %>
+               <table class="table table-striped">
+                 <caption><h3>Book Details</h3></caption>
+                 <tr>
+                   <th>ISBN</th>
+                   <th>BOOK NAME</th>
+                   <th>AUTHOR(S)</th>
+                   <th>BRANCH ID</th>
+                   <th>BRANCH NAME</th>
+                   <th>NO. OF COPIES</th>
+                 </tr>
+                <% for (var i = 0; i < results.length; i++) { %>
+                  <tr>
+                    <td><%= results[i].isbn10 %></td>
+                    <td><%= results[i].title %></td>
+                    <td><%= results[i].author %></td>
+                    <td><%= results[i].branch_id %></td>
+                    <td><%= results[i].branch_name %></td>
+                    <td><%= results[i].no_of_copies %></td>
+                  </tr>
+                  <% } %>
+                </table>
               <% } %>
+              <br>
+              <input type="button" onclick="location.href='http://localhost:8080/api/searchbook';" value="Search other book" />
             </div>
-            <input type="button" onclick="location.href='http://localhost:8080/api/searchbook';" value="Search other book" />
+
          </div>
        </div>
       </div>
