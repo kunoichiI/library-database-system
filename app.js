@@ -27,26 +27,29 @@ client.connect();
 var router = express.Router();
 
 router.get('/', function(req, res, next){
-  res.render('index.html');
-})
-router.get('/searchbook', function(req, res){
-  res.render('search.ejs');
-})
-router.get('/search', function(req, res){
-  res.render('searchResults.ejs');
-})
-router.get('/checkout', function(req, res){
-  res.render('checkout.ejs');
-})
-router.get('/success', function(req, res){
-  res.render('checkoutSucess.ejs');
-})
-router.get('/checkin', function(req, res){
-  res.render('checkinRegister.ejs');
-})
-router.get('/checkin/:loan_id', function(req, res){
-  res.render('checkinForm.ejs');
-})
+        res.render('index.html');
+      })
+      .get('/searchbook', function(req, res){
+        res.render('search.ejs');
+      })
+      .get('/search', function(req, res){
+        res.render('searchResults.ejs');
+      })
+      .get('/checkout', function(req, res){
+        res.render('checkout.ejs');
+      })
+      .get('/success', function(req, res){
+        res.render('checkoutSucess.ejs');
+      })
+      .get('/checkin', function(req, res){
+        res.render('checkinRegister.ejs');
+      })
+      .get('/checkin/:loan_id', function(req, res){
+        res.render('checkinForm.ejs');
+      })
+      .get('/newreader', function(req, res){
+        res.render('createBorrower.ejs');
+      })
 
 // Search for a book by given name, isbn and/or author combination
 router.post('/search', function(req, res){
@@ -181,6 +184,7 @@ router.post('/checkin/:loan_id', function(req, res){
 
 
 // Create new borrowers in the system
+// If a new borrower is attempted withe same SSN, then your system should reject and return a useful error message.
 router.post('/newreader', function(req, res){
   var result = [];
   var reader = {
@@ -189,21 +193,23 @@ router.post('/newreader', function(req, res){
     ssn : req.body.ssn,
     address : req.body.address,
     city : req.body.city,
-    state : req.body.state
+    state : req.body.state,
+    phone : req.body.phone
   }
+  console.log(reader.ssn);
   var query1 = client.query("SELECT ssn FROM borrower WHERE ssn = ($1)", [reader.ssn]);
   query1.on('row', function(row){
     result.push(row);
   })
   query1.on('end',function(){
     console.log(result);
-    if (result == null) {
-      var query = client.query("INSERT INTO borrower(ssn, fname, lname, address, city, state) VALUES($1, $2, $3, $4, $5, $6)", [reader.ssn, reader.fname, reader.lname, reader.address, reader.city, reader.state]);
+    if (result.length == 0) {
+      var query = client.query("INSERT INTO borrower(ssn, fname, lname, address, city, state,phone) VALUES($1, $2, $3, $4, $5, $6,$7)", [reader.ssn, reader.fname, reader.lname, reader.address, reader.city, reader.state, reader.phone]);
       query.on('end', function(){
-         res.json({message: 'New reader created!'});
+         res.render('borrowerCreated.ejs', {result: reader});
       })
     } else {
-      console.log("Borrower already exists!");
+      res.render('borrowerNotCreated.ejs', {message:'The SSN already exists in our database!'})
     }
   })
 })

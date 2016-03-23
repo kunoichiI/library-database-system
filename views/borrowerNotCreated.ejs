@@ -5,7 +5,7 @@
     ================================================== -->
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-     <title>UTD Library : Checkout</title>
+     <title>UTD Library : Borrower Management</title>
 
     <!-- Mobile Specific Metas
     ================================================== -->
@@ -65,9 +65,9 @@
               <ul id="top-menu" class="nav navbar-nav navbar-right main-nav">
                 <li><a href="http://localhost:8080/api/">Home</a></li>
                 <li><a href="http://localhost:8080/api/searchbook">Search A Book</a></li>
-                <li><a href="http://localhost:8080/api/checkout">Checkout</a></li>
-                <li class="active"><a href="http://localhost:8080/api/checkout">Checkin</a></li>
+                <li class="active"><a href="http://localhost:8080/api/checkout">Checkout</a></li>
                 <li><a href="http://localhost:8080/api/newreader">Borrower Management</a></li>
+                <li><a href="gallery.html">Gallery</a></li>
                 <li><a href="blog-archive.html">Blog</a></li>
                 <li><a href="contact.html">Contact</a></li>
               </ul>
@@ -81,58 +81,66 @@
 
     <!--=========== BEGIN COURSE BANNER SECTION ================-->
     <section id="imgBanner">
-      <h2>Checkout</h2>
+      <h2>BORROWER MANAGE</h2>
     </section>
     <!--=========== END COURSE BANNER SECTION ================-->
 
     <!--=========== BEGIN COURSE BANNER SECTION ================-->
-    <section id="contact">
+    <section id="courseArchive">
       <div class="container">
         <div class="row">
-          <div class="col-lg-12 col-md-12">
-            <div class="title_area">
-              <h2 class="title_two">CHECKIN HERE</h2>
-              <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
-            </div>
-          </div>
-        </div>
-          <!-- start checkin register form content -->
+          <!-- start course content -->
+          <div class="col-lg-8 col-md-8 col-sm-8">
+            <div class="courseArchive_content">
+              <!-- start blog archive  -->
               <div class="row">
+                <!-- start single blog -->
                 <div class="col-lg-12 col-12 col-sm-12">
-                  <div class="contact_form wow fadeInLeft">
-                    <form class="col-lg-12 col-md-12 col-sm-12" id ='checkinform'role="form" method = 'POST' action ="http://localhost:8080/api/checkin">
-                      <div class="form-group">
-                        <label for="book_id">BOOK ID:</label>
-                        <input type="text" class="form-control" name = "book_id" id="book_id">
-                      </div>
-                      <div class="form-group">
-                        <label for="card_no">CARD NO:</label>
-                        <input type="text" class="form-control" name = "card_no" id="card_no">
-                      </div>
-                      <div class="form-group">
-                        <label for="fname">FIRST NAME:</label>
-                        <input type="text" class="form-control" name = "fname" id="fname">
-                      </div>
-                      <div class="form-group">
-                        <label for="lname">LAST NAME:</label>
-                        <input type="text" class="form-control" name = "lname" id="lname">
-                      </div>
-                      <button type="submit" class="btn btn-default">Find Borrower</button>
-                      </form>
+                  <div class="single_blog">
+
                   </div>
                 </div>
+                <!-- End single blog -->
               </div>
+              <!-- end blog archive  -->
             </div>
+          </div>
+          <!-- End course content -->
 
+          <!-- start course archive sidebar -->
+          <div class="col-lg-12 col-md-12 col-sm-12">
+            <div class="courseArchive_sidebar">
+              <!-- start single sidebar -->
+              <div class="single_sidebar">
+                <h2>Borrower Manament <span class="fa fa-angle-double-right"></span></h2>
+                <ul class="news_tab">
+                  <li style='display:inline'>
+                    <div class="media">
+                      <div class="media-left">
+                        <a href="#" class="news_img">
+                          <img alt="img" src="http://localhost:8080/static/img/awful.jpg" class="media-object">
+                        </a>
+                      </div>
+                      <div class="alert alert-danger">
+                        <strong><%=message %></strong>
+                      </div>
+                      <br>
+                      <input type="button" onclick="location.href='http://localhost:8080/api/newreader';" value="Create New Borrower" />
+                    </div>
+                  </li>
+                </ul>
+              </div>
 
-        <!-- start single sidebar -->
-        <div class="single_sidebar">
+              <!-- start single sidebar -->
+              <div class="single_sidebar">
 
+              </div>
+              <!-- End single sidebar -->
+            </div>
+          </div>
+          <!-- start course archive sidebar -->
         </div>
-
-
-
-
+      </div>
     </section>
     <!--=========== END COURSE BANNER SECTION ================-->
 

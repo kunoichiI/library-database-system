@@ -1,16 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+
     <!-- Basic Page Needs
     ================================================== -->
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-     <title>UTD Library : Checkout</title>
+     <title>UTD Library : Search A Book</title>
 
     <!-- Mobile Specific Metas
     ================================================== -->
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
     <!-- CSS
     ================================================== -->
     <!-- Bootstrap css file-->
@@ -35,6 +35,7 @@
     <!-- Google fonts -->
     <link href='http://fonts.googleapis.com/css?family=Merriweather' rel='stylesheet' type='text/css'>
     <link href='http://fonts.googleapis.com/css?family=Varela' rel='stylesheet' type='text/css'>
+
   </head>
   <body>
 
@@ -48,30 +49,30 @@
       <div class="menu_area">
         <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
           <div class="container">
-            <div class="navbar-header">
-              <!-- FOR MOBILE VIEW COLLAPSED BUTTON -->
-              <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-                <span class="sr-only">Toggle navigation</span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-              </button>
-              <!-- LOGO -->
-              <!-- TEXT BASED LOGO -->
-              <a class="navbar-brand" href="http://localhost:8080/api/">UTD <span>Library</span></a>
+          <div class="navbar-header">
+            <!-- FOR MOBILE VIEW COLLAPSED BUTTON -->
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+            <!-- LOGO -->
+            <!-- TEXT BASED LOGO -->
+            <a class="navbar-brand" href="index.html">UTD <span>Library</span></a>
 
-            </div>
-            <div id="navbar" class="navbar-collapse collapse">
-              <ul id="top-menu" class="nav navbar-nav navbar-right main-nav">
-                <li><a href="http://localhost:8080/api/">Home</a></li>
-                <li><a href="http://localhost:8080/api/searchbook">Search A Book</a></li>
-                <li><a href="http://localhost:8080/api/checkout">Checkout</a></li>
-                <li class="active"><a href="http://localhost:8080/api/checkout">Checkin</a></li>
-                <li><a href="http://localhost:8080/api/newreader">Borrower Management</a></li>
-                <li><a href="blog-archive.html">Blog</a></li>
-                <li><a href="contact.html">Contact</a></li>
-              </ul>
-            </div><!--/.nav-collapse -->
+          </div>
+          <div id="navbar" class="navbar-collapse collapse">
+            <ul id="top-menu" class="nav navbar-nav navbar-right main-nav">
+              <li><a href="http://localhost:8080/api/">Home</a></li>
+              <li class="active"><a href="http://localhost:8080/api/searchbook">Search A Book</a></li>
+              <li><a href="http://localhost:8080/api/checkout">Checkout</a></li>
+              <li><a href="http://localhost:8080/api/checkin">Checkin</a></li>
+              <li><a href="gallery.html">Gallery</a></li>
+              <li><a href="blog-archive.html">Blog</a></li>
+              <li><a href="contact.html">Contact</a></li>
+            </ul>
+          </div><!--/.nav-collapse -->
           </div>
         </nav>
       </div>
@@ -81,60 +82,52 @@
 
     <!--=========== BEGIN COURSE BANNER SECTION ================-->
     <section id="imgBanner">
-      <h2>Checkout</h2>
+      <h2>Borrower Management</h2>
     </section>
-    <!--=========== END COURSE BANNER SECTION ================-->
 
-    <!--=========== BEGIN COURSE BANNER SECTION ================-->
+    <!--=========== BEGIN SEARCH FORM SECTION ==================-->
     <section id="contact">
       <div class="container">
-        <div class="row">
+       <div class="row">
           <div class="col-lg-12 col-md-12">
             <div class="title_area">
-              <h2 class="title_two">CHECKIN HERE</h2>
+              <h2 class="title_two">Borrower Info</h2>
               <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
             </div>
           </div>
-        </div>
-          <!-- start checkin register form content -->
-              <div class="row">
-                <div class="col-lg-12 col-12 col-sm-12">
-                  <div class="contact_form wow fadeInLeft">
-                    <form class="col-lg-12 col-md-12 col-sm-12" id ='checkinform'role="form" method = 'POST' action ="http://localhost:8080/api/checkin">
-                      <div class="form-group">
-                        <label for="book_id">BOOK ID:</label>
-                        <input type="text" class="form-control" name = "book_id" id="book_id">
-                      </div>
-                      <div class="form-group">
-                        <label for="card_no">CARD NO:</label>
-                        <input type="text" class="form-control" name = "card_no" id="card_no">
-                      </div>
-                      <div class="form-group">
-                        <label for="fname">FIRST NAME:</label>
-                        <input type="text" class="form-control" name = "fname" id="fname">
-                      </div>
-                      <div class="form-group">
-                        <label for="lname">LAST NAME:</label>
-                        <input type="text" class="form-control" name = "lname" id="lname">
-                      </div>
-                      <button type="submit" class="btn btn-default">Find Borrower</button>
-                      </form>
-                  </div>
-                </div>
-              </div>
+       </div>
+         <div class="col-lg-8 col-md-8 col-sm-8">
+           <div class="container">
+               <table class="table table-striped">
+                 <caption><h3>Borrower Details:</h3></caption>
+                 <tr>
+                   <th>SSN</th>
+                   <th>FIRST NAME</th>
+                   <th>LAST NAME</th>
+                   <th>ADDRESS</th>
+                   <th>CITY</th>
+                   <th>STATE</th>
+                 </tr>
+                  <tr>
+                    <td><%= result.ssn %></td>
+                    <td><%= result.fname %></td>
+                    <td><%= result.lname %></td>
+                    <td><%= result.address %></td>
+                    <td><%= result.city %></td>
+                    <td><%= result.state %></td>
+                  </tr>
+                </table>
+              <br>
+              <input type="button" onclick="location.href='http://localhost:8080/api/newreader';" value="Create New Borrower" />
             </div>
 
-
-        <!-- start single sidebar -->
-        <div class="single_sidebar">
-
-        </div>
-
-
-
-
+         </div>
+       </div>
+      </div>
     </section>
-    <!--=========== END COURSE BANNER SECTION ================-->
+
+    <!--=========== END SEARCH FORM SECTION ==================-->
+
 
     <!--=========== BEGIN FOOTER SECTION ================-->
     <footer id="footer">
