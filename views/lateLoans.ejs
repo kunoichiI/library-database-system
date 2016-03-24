@@ -66,9 +66,9 @@
                 <li><a href="http://localhost:8080/api/">Home</a></li>
                 <li><a href="http://localhost:8080/api/searchbook">Search A Book</a></li>
                 <li><a href="http://localhost:8080/api/checkout">Checkout</a></li>
-                <li class="active"><a href="http://localhost:8080/api/checkin">Checkin</a></li>
+                <li><a href="http://localhost:8080/api/checkin">Checkin</a></li>
                 <li><a href="http://localhost:8080/api/newreader">Borrower Management</a></li>
-                <li><a href="http://localhost:8080/api/late">Late Loans</a></li>
+                <li class="active"><a href="http://localhost:8080/api/late">Late Loans</a></li>
                 <li><a href="contact.html">Contact</a></li>
               </ul>
             </div><!--/.nav-collapse -->
@@ -81,7 +81,7 @@
 
     <!--=========== BEGIN COURSE BANNER SECTION ================-->
     <section id="imgBanner">
-      <h2>Checkin</h2>
+      <h2>LATE LOANS</h2>
     </section>
     <!--=========== END COURSE BANNER SECTION ================-->
 
@@ -134,6 +134,32 @@
               <input type="button" onclick="location.href='http://localhost:8080/api/late';" value="UPDATE LATE LOANS" />
             </div>
 
+            <div class="container">
+              <% if (sum.length == 0) { %>
+                <h2>No Available Group List For Borrowers Now..</h2>
+              <% } else { %>
+                <br>
+                <table class="table table-striped">
+                  <caption><h3>Loan Group for Borrowers:></h3></caption>
+                  <tr>
+                    <th>CARD NO</th>
+                    <th>FIRST NAME</th>
+                    <th>LAST NAME</th>
+                    <th>SUMMARY</th>
+                  </tr>
+                 <% for (var i = 0; i < sum.length; i++) { %>
+                   <tr>
+                     <td><%= sum[i].card_no %></td>
+                     <td><%= sum[i].fname %></td>
+                     <td><%= sum[i].lname %></td>
+                     <td><%= sum[i].sum %></td>
+                   </tr>
+                   <% } %>
+                 </table>
+               <% } %>
+               <br>
+               <input type="button" onclick="location.href='http://localhost:8080/api/late';" value="UPDATE LATE LOANS" />
+             </div>
          </div>
        </div>
       </div>

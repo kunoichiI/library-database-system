@@ -222,17 +222,27 @@ router.post('/newreader', function(req, res){
 // 2. late books that are still out - the estimated fine will be [(the difference between the due_date and TODAY) * $0.25].
 router.post('/late', function(req, res){
  var late_loans = [];
- var query = client.query("INSERT INTO fines(loan_id, fine_amt, paid) (SELECT l.loan_id, (l.date_in - l.due_date) * 0.25, FALSE FROM book_loans AS l WHERE NOT EXISTS (SELECT loan_id FROM fines) AND (l.date_in > l.due_date)) UNION (SELECT l.loan_id, (CURRENT_DATE - l.due_date)*0.25, FALSE FROM book_loans AS l WHERE NOT EXISTS (SELECT loan_id FROM fines) AND (l.date_in IS NULL) AND (l.due_date < CURRENT_DATE))");
+ var sum = [];
+ var query = client.query("INSERT INTO fines(loan_id, fine_amt, paid) (SELECT l.loan_id, (l.date_in - l.due_date) * 0.25, FALSE FROM book_loans AS l WHERE NOT EXISTS (SELECT * FROM fines WHERE fines.loan_id = l.loan_id) AND (l.date_in > l.due_date))UNION (SELECT l.loan_id, (CURRENT_DATE - l.due_date)*0.25, FALSE FROM book_loans AS l WHERE NOT EXISTS (SELECT * FROM fines WHERE fines.loan_id = l.loan_id) AND (l.date_in IS NULL) AND (l.due_date < CURRENT_DATE))");
  query.on('end',function(){
+   // update fines for book loans that haven't been returned
    var query1 = client.query("UPDATE fines SET fine_amt = (CURRENT_DATE - l.due_date)*0.25 FROM book_loans AS l WHERE fines.loan_id = l.loan_id AND l.date_in IS NULL AND paid = FALSE");
    query1.on('end', function(){
-     //res.json({message: 'Sucessfully update fines table!'});
-     var query2 = client.query("SELECT SUM(f.fine_amt),l.loan_id, l.card_no, l.isbn,l.date_out, l.due_date, l.date_in FROM fines AS f, book_loans AS l WHERE f.paid = FALSE AND f.loan_id = l.loan_id GROUP BY l.card_no,l.loan_id, l.card_no, l.isbn, l.date_out, l.due_date, l.date_in");
+     var query2 = client.query("SELECT DISTINCT SUM(f.fine_amt),b.fname, b.lname, l.card_no FROM fines AS f, borrower AS b, book_loans AS l WHERE f.paid = FALSE AND f.loan_id = l.loan_id AND b.card_no = l.card_no GROUP BY l.card_no, b.fname, b.lname");
      query2.on('row', function(row){
-       late_loans.push(row);
+       sum.push(row);
      })
      query2.on('end', function(){
-       res.render('lateLoans.ejs',{results:late_loans});
+       var query3 = client.query("SELECT DISTINCT f.fine_amt,l.loan_id, l.card_no, l.isbn,l.date_out, l.due_date, l.date_in FROM fines AS f, book_loans AS l WHERE f.paid = FALSE AND f.loan_id = l.loan_id ORDER BY l.card_no")
+       query3.on('row',function(row){
+         late_loans.push(row);
+       })
+       query3.on('end',function(){
+         //res.json(sum);
+         res.render('lateLoans.ejs',{results:late_loans,sum : sum});
+       })
+
+
      })
    })
    })
