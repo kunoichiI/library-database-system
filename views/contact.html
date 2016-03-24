@@ -16,41 +16,31 @@
     <!-- CSS
     ================================================== -->
     <!-- Bootstrap css file-->
-    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="http://localhost:8080/static/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font awesome css file-->
-    <link href="css/font-awesome.min.css" rel="stylesheet">
+    <link href="http://localhost:8080/static/css/font-awesome.min.css" rel="stylesheet">
     <!-- Superslide css file-->
-    <link rel="stylesheet" href="css/superslides.css">
+    <link rel="stylesheet" href="http://localhost:8080/static/css/superslides.css">
     <!-- Slick slider css file -->
-    <link href="css/slick.css" rel="stylesheet">
+    <link href="http://localhost:8080/static/css/slick.css" rel="stylesheet">
     <!-- Circle counter cdn css file -->
     <link rel='stylesheet prefetch' href='https://cdn.rawgit.com/pguso/jquery-plugin-circliful/master/css/jquery.circliful.css'>
     <!-- smooth animate css file -->
-    <link rel="stylesheet" href="css/animate.css">
+    <link rel="stylesheet" href="http://localhost:8080/static/css/animate.css">
     <!-- preloader -->
-    <link rel="stylesheet" href="css/queryLoader.css" type="text/css" />
+    <link rel="stylesheet" href="http://localhost:8080/static/css/queryLoader.css" type="text/css" />
     <!-- gallery slider css -->
-    <link type="text/css" media="all" rel="stylesheet" href="css/jquery.tosrus.all.css" />
+    <link type="text/css" media="all" rel="stylesheet" href="http://localhost:8080/static/css/jquery.tosrus.all.css" />
     <!-- Default Theme css file -->
-    <link id="switcher" href="css/themes/default-theme.css" rel="stylesheet">
+    <link id="switcher" href="http://localhost:8080/static/css/themes/default-theme.css" rel="stylesheet">
     <!-- Main structure css file -->
-    <link href="style.css" rel="stylesheet">
+    <link href="http://localhost:8080/static/style.css" rel="stylesheet">
 
     <!-- Google fonts -->
     <link href='http://fonts.googleapis.com/css?family=Merriweather' rel='stylesheet' type='text/css'>
     <link href='http://fonts.googleapis.com/css?family=Varela' rel='stylesheet' type='text/css'>
-
-    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-    <!--[if lt IE 9]>
-      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
-      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-    <![endif]-->
-
-
   </head>
   <body>
-
     <!-- SCROLL TOP BUTTON -->
     <a class="scrollToTop" href="#"></a>
     <!-- END SCROLL TOP BUTTON -->
@@ -75,13 +65,13 @@
           </div>
           <div id="navbar" class="navbar-collapse collapse">
             <ul id="top-menu" class="nav navbar-nav navbar-right main-nav">
-              <li><a href="index.html">Home</a></li>
-              <li><a href="course-archive.html">Course</a></li>
-              <li><a href="scholarship.html">Scholarship</a></li>
-              <li><a href="events-archive.html">Events</a></li>
-              <li><a href="gallery.html">Gallery</a></li>
-              <li><a href="blog-archive.html">Blog</a></li>
-              <li class="active"><a href="contact.html">Contact</a></li>
+              <li><a href="http://localhost:8080/api/">Home</a></li>
+              <li><a href="http://localhost:8080/api/searchbook">Search A Book</a></li>
+              <li><a href="http://localhost:8080/api/checkout">Checkout</a></li>
+              <li><a href="http://localhost:8080/api/checkin">Checkin</a></li>
+              <li><a href="http://localhost:8080/api/newreader">Borrower Management</a></li>
+              <li><a href="http://localhost:8080/api/late">Late Loans</a></li>
+              <li class="active"><a href="http://localhost:8080/api/contact">Contact</a></li>
             </ul>
           </div><!--/.nav-collapse -->
           </div>
@@ -125,9 +115,9 @@
            <div class="contact_address wow fadeInRight">
              <h3>Address</h3>
              <div class="address_group">
-               <p>200 Lincoln Ave, Salinas, CA 93901</p>
-               <p>Phone: 662-807-9585</p>
-               <p>Email:contact@wpfdegree.com</p>
+               <p>800 W Campbell Rd, Richardson,TX 75080</p>
+               <p>Phone: (972) 883-2111</p>
+               <p>Email:contact@utdlibrary.edu</p>
              </div>
              <div class="address_group">
               <ul class="footer_social">
@@ -147,7 +137,7 @@
 
     <!--=========== BEGIN GOOGLE MAP SECTION ================-->
     <section id="googleMap">
-      <iframe width="100%" height="500" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="https://www.google.com/maps?f=q&amp;source=s_q&amp;hl=en&amp;geocode=&amp;q=200+Lincoln+Ave,+Salinas,+CA,+USA&amp;aq=&amp;sll=30.977609,-95.712891&amp;sspn=42.157377,86.572266&amp;ie=UTF8&amp;hq=&amp;hnear=200+Lincoln+Ave,+Salinas,+California+93901-2639&amp;t=m&amp;z=14&amp;ll=36.674837,-121.657691&amp;output=embed"></iframe>
+      <iframe width="100%" height="500" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="https://www.google.com/maps?f=q&amp;source=s_q&amp;hl=en&amp;geocode=&amp;q=800+W+Campbell+Rd,+Richardson,+TX,+USA&amp;aq=&amp;sll=30.977609,-95.712891&amp;sspn=42.157377,86.572266&amp;ie=UTF8&amp;hq=&amp;hnear=200+Lincoln+Ave,+Salinas,+California+75080&amp;t=m&amp;z=14&amp;ll=36.674837,-121.657691&amp;output=embed"></iframe>
     </section>
     <!--=========== END GOOGLE MAP SECTION ================-->
 
@@ -160,30 +150,18 @@
             <div class="col-ld-3  col-md-3 col-sm-3">
               <div class="single_footer_widget">
                 <h3>About Us</h3>
-                <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.</p>
+                <p>We embrace the mission of the University of Texas at Dallas by providing maximum access to relevant, authoritative, and scholarly resources. We are dedicated to maintain a congenial atmosphere for the library community and will endeavor to advance the lifelong educational needs of our diverse clientele.</p>
               </div>
             </div>
             <div class="col-ld-3  col-md-3 col-sm-3">
               <div class="single_footer_widget">
                 <h3>Community</h3>
                 <ul class="footer_widget_nav">
-                  <li><a href="#">Our Tutors</a></li>
+                  <li><a href="#">Our Librarians</a></li>
                   <li><a href="#">Our Students</a></li>
-                  <li><a href="#">Our Team</a></li>
+                  <li><a href="#">Faculty</a></li>
                   <li><a href="#">Forum</a></li>
                   <li><a href="#">News &amp; Media</a></li>
-                </ul>
-              </div>
-            </div>
-            <div class="col-ld-3  col-md-3 col-sm-3">
-              <div class="single_footer_widget">
-                <h3>Others</h3>
-                <ul class="footer_widget_nav">
-                  <li><a href="#">Link 1</a></li>
-                  <li><a href="#">Link 2</a></li>
-                  <li><a href="#">Link 3</a></li>
-                  <li><a href="#">Link 4</a></li>
-                  <li><a href="#">Link 5</a></li>
                 </ul>
               </div>
             </div>
@@ -213,11 +191,6 @@
                 <p> Copyright &copy; All Rights Reserved</p>
               </div>
             </div>
-            <div class="col-lg-6 col-md-6 col-sm-6">
-              <div class="footer_bootomRight">
-                <p>Designed by <a href="http://wpfreeware.com/" rel="nofollow">Wpfreeware.com</a></p>
-              </div>
-            </div>
           </div>
         </div>
       </div>
@@ -227,34 +200,27 @@
 
 
 
-    <!-- Javascript Files
-    ================================================== -->
-
     <!-- initialize jQuery Library -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
     <!-- Preloader js file -->
-    <script src="js/queryloader2.min.js" type="text/javascript"></script>
+    <script src="http://localhost:8080/static/js/queryloader2.min.js" type="text/javascript"></script>
     <!-- For smooth animatin  -->
-    <script src="js/wow.min.js"></script>
+    <script src="http://localhost:8080/static/js/wow.min.js"></script>
     <!-- Bootstrap js -->
-    <script src="js/bootstrap.min.js"></script>
+    <script src="http://localhost:8080/static/js/bootstrap.min.js"></script>
     <!-- slick slider -->
-    <script src="js/slick.min.js"></script>
+    <script src="http://localhost:8080/static/js/slick.min.js"></script>
     <!-- superslides slider -->
-    <script src="js/jquery.easing.1.3.js"></script>
-    <script src="js/jquery.animate-enhanced.min.js"></script>
-    <script src="js/jquery.superslides.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="http://localhost:8080/static/js/jquery.easing.1.3.js"></script>
+    <script src="http://localhost:8080/static/js/jquery.animate-enhanced.min.js"></script>
+    <script src="http://localhost:8080/static/js/jquery.superslides.min.js" type="text/javascript" charset="utf-8"></script>
     <!-- for circle counter -->
     <script src='https://cdn.rawgit.com/pguso/jquery-plugin-circliful/master/js/jquery.circliful.min.js'></script>
     <!-- Gallery slider -->
-    <script type="text/javascript" language="javascript" src="js/jquery.tosrus.min.all.js"></script>
+    <script type="text/javascript" language="javascript" src="http://localhost:8080/static/js/jquery.tosrus.min.all.js"></script>
 
     <!-- Custom js-->
-    <script src="js/custom.js"></script>
-  <!--===============================================
-    Template Design By WpFreeware Team.
-    Author URI : http://www.wpfreeware.com/
-  ====================================================-->
+    <script src="http://localhost:8080/static/js/custom.js"></script>
 
   </body>
 </html>

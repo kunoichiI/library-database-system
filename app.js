@@ -29,6 +29,9 @@ var router = express.Router();
 router.get('/', function(req, res, next){
         res.render('index.html');
       })
+      .get('/contact', function(req, res){
+        res.render('contact.html');
+      })
       .get('/searchbook', function(req, res){
         res.render('search.ejs');
       })
